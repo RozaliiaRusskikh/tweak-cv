@@ -11,7 +11,7 @@
 | Webhook | FastAPI | Receives Slack interaction payloads |
 | Storage | SQLite + SQLAlchemy | Zero-config, local, no running server |
 | PDF | WeasyPrint | HTML/CSS → PDF, pure Python, no browser needed |
-| Observability | Langfuse Hobby (free) | Tracing, evals, scores, prompt versioning |
+| Observability | Langfuse Hobby (free) | Tracing, evals, scores, prompt management & versioning |
 | Config | python-dotenv | `.env` for API keys |
 | Deployment | Docker + Docker Compose | Native isolation of Weasyprint's underlying system graphical/font libraries. |
 
@@ -60,9 +60,17 @@ Prompts and model config live outside code – versioned independently, swappabl
 }
 ```
 
-> **Rule:** nodes load their harness entry by `id` at startup. To change a prompt, edit
-> `harness.json` and restart – no Python changes needed. Each prompt change should bump
-> a version comment in the JSON (e.g. `"version": "v3"`) so Langfuse traces are tagged.
+> **Rule:** Model names and timeouts always live in `harness.json`. Prompts are stored
+> and versioned in **Langfuse Prompt Management** (free Hobby tier) as the primary source;
+> `harness.json` holds the same prompt text as a **fallback** for offline or Langfuse-
+> unavailable scenarios.
+>
+> - **Primary – Langfuse:** fetch at runtime via `langfuse.get_prompt(id)`. The SDK caches
+>   locally (TTL-based), so no per-call latency. Langfuse auto-versions every save and links
+>   each version to traces — no manual `"version"` bump or restart needed.
+> - **Fallback – harness.json:** if `langfuse.get_prompt()` raises (network error, service
+>   down), the node falls back to the `system_prompt` field in the matching harness entry.
+>   Bump `"version"` when the text changes (e.g. `"version": "v3"`) so traces are still tagged.
 
 ---
 
@@ -134,6 +142,32 @@ Layer 2 – LangGraph node retry (explicit):
 Retry only on: network errors, timeouts, rate limits (transient)
 Never retry on: JSON parse errors, schema validation failures (permanent – fix the prompt)
 ```
+
+---
+
+## Edit Loop Cap
+
+Tracked via `iteration` in `TailorState` (incremented inside `edit_node`):
+
+```
+iteration = 0  (initial)
+
+on each edit route:
+  iteration += 1
+
+  if iteration == 3:
+    → notify_node appends warning to Slack message:
+      ⚠️ This is your last edit – approve or reject after this
+
+  if iteration >= 4:
+    → await_feedback_node hard-stops before routing to edit_node
+    → bot posts: ⚠️ Maximum edits reached – please approve or reject the current version
+    → Edit button removed from Slack message
+    → job stays 'pending' until Approve / Reject / 24h expiry
+```
+
+Guard lives in `await_feedback_node`, checked before routing to `edit_node`. No change to
+retry logic or scoring — the cap is orthogonal to those.
 
 ---
 

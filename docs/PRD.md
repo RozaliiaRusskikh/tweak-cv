@@ -35,6 +35,14 @@ If the user starts an **Edit loop** but stops replying mid-thread:
 - After expiry bot posts: ⏰ *No reply received – resumé discarded*
 - Thread marked `expired`
 
+## Edit Loop Cap
+
+The edit loop (Edit → apply edits → Slack notification → repeat) is capped at **3 iterations** per job:
+
+- At iteration 3, the Slack notification includes a warning: ⚠️ *This is your last edit – approve or reject after this*
+- At iteration 4, the graph hard-stops: bot posts ⚠️ *Maximum edits reached – please approve or reject the current version*, and the Edit button is removed
+- Nothing is saved until the user explicitly Approves; the job remains `pending` until Approve, Reject, or 24h expiry
+
 ## Retry Behaviour
 
 If the AI call fails (network error, rate limit, timeout):
@@ -64,7 +72,7 @@ If `keyword_coverage < 0.5`, the resume is automatically regenerated once before
 - PDF filename: `RozaRusskikh_{Role}_2026.pdf`
 - No cloud storage – all files saved locally
 - AI provider: Gemini 2.5 Flash (Google AI Studio free tier)
-- Observability: Langfuse Hobby tier (free, 50k observations/month)
+- Observability & prompt management: Langfuse Hobby tier (free, 50k observations/month). Prompts are stored and versioned in Langfuse (primary); `harness.json` holds the same prompt text as a fallback for offline / Langfuse-unavailable scenarios
 
 ## Out of Scope (v1)
 
