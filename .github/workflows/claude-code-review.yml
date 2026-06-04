@@ -1,0 +1,236 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+  # ── MANUAL TRIGGER ────────────────────────────────────────────────────────
+  # 1. Go to the "Actions" tab in GitHub.
+  # 2. Select "Claude Code Review" from the left sidebar.
+  # 3. Click "Run workflow" → Enter the PR number → Click "Run workflow".
+  # ──────────────────────────────────────────────────────────────────────────
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: "PR number to review"
+        required: true
+
+# Cancel a review if a new commit is pushed to the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.inputs.pull_request_number }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    if: ${{ !github.event.pull_request.draft }}
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve HEAD SHA
+        id: meta
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.payload.pull_request?.head?.sha;
+            if (sha) {
+              core.setOutput('sha', sha);
+              return;
+            }
+            const prNumber = Number(context.payload.inputs?.pull_request_number);
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+            core.setOutput('sha', pr.head.sha);
+
+      - name: Compute PR review state
+        id: review-state
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const repo = context.repo;
+            const pr = context.payload.pull_request?.number ?? Number(context.payload.inputs?.pull_request_number);
+            if (!pr) { core.setFailed('PR number not found.'); return; }
+
+            const inline = await github.paginate(github.rest.pulls.listReviewComments, {
+              owner: repo.owner,
+              repo: repo.repo,
+              pull_number: pr,
+              per_page: 100,
+            });
+
+            const RESOLUTION_PHRASES = ['already discussed', 'follows official documentation', 'by design'];
+            const resolvedIds = [
+              ...new Set(
+                inline
+                  .filter(c => RESOLUTION_PHRASES.some(p => c.body?.toLowerCase().includes(p)))
+                  .map(c => String(c.in_reply_to_id ?? c.id))
+              ),
+            ].join(',');
+
+            core.setOutput('pr_number', String(pr));
+            core.setOutput('resolved_thread_ids', resolvedIds);
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: ${{ github.event_name != 'workflow_dispatch' }}
+
+          prompt: |
+            ## PRE-COMPUTED REVIEW STATE (treat as ground truth)
+            RESOLVED_THREAD_IDS: ${{ steps.review-state.outputs.resolved_thread_ids }}
+
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ steps.review-state.outputs.pr_number }}
+            HEAD SHA: ${{ steps.meta.outputs.sha }}
+
+            ## STEP 1 — Determine review scope
+
+            Fetch all issue-level comments:
+              gh api repos/${{ github.repository }}/issues/${{ steps.review-state.outputs.pr_number }}/comments --paginate
+
+            Search for a comment containing `<!-- claude-review-sha:` and extract the SHA (LAST_SHA).
+
+            Case A — LAST_SHA found (incremental review):
+              - Diff only new changes: `git diff LAST_SHA ${{ steps.meta.outputs.sha }}`
+              - Previously flagged issues: check if still present. Fixed → note in summary.
+                Still present → do NOT re-comment. Only escalate if more severe.
+
+            Case B — No LAST_SHA (first review):
+              - Full diff: `gh pr diff ${{ steps.review-state.outputs.pr_number }}`
+
+            ## STEP 2 — Read all existing comments (deduplication)
+
+            Before posting anything:
+              gh api repos/${{ github.repository }}/pulls/${{ steps.review-state.outputs.pr_number }}/comments
+              gh api repos/${{ github.repository }}/issues/${{ steps.review-state.outputs.pr_number }}/comments
+
+            Do NOT re-raise any issue whose root comment ID appears in RESOLVED_THREAD_IDS.
+
+            ## STEP 3 — Post review
+
+            Use `mcp__github_inline_comment__create_inline_comment` for inline issues.
+            Post exactly ONE top-level summary via `gh pr comment`:
+
+              ## Claude Code Review
+
+              **Scope**: Full review | Incremental — changes since `<first 7 chars of LAST_SHA>`
+              **Commit**: `<first 7 chars of HEAD SHA>`
+
+              ### Summary
+              <2-3 sentences on overall quality, risk level, and readiness>
+
+              ### Findings
+              | Severity | Count |
+              |---|---|
+              | [BLOCKING] | N |
+              | [SUGGESTION] | N |
+              | [OBSERVATION] | N |
+
+              ### Fixed Since Last Review
+              <items fixed since LAST_SHA — omit on first review>
+
+              ### Looks Good
+              <1-2 genuine callouts — omit if nothing stands out>
+
+              ### Python Tip
+              <1 Pythonic pattern from the diff worth learning — not a bug, a growth moment>
+              <2-3 sentences: what it is, why it matters, concrete example from their code>
+              📖 <link to official docs>
+
+              <!-- claude-review-sha:${{ steps.meta.outputs.sha }} -->
+
+            The `<!-- claude-review-sha:... -->` marker is mandatory — enables incremental reviews.
+
+            ## STEP 4 — Apply or remove "ready for review" label
+
+            - Zero [BLOCKING] issues: `gh pr edit ${{ steps.review-state.outputs.pr_number }} --add-label "ready for review"`
+            - Any [BLOCKING] issues: `gh pr edit ${{ steps.review-state.outputs.pr_number }} --remove-label "ready for review"`
+            [SUGGESTION] and [OBSERVATION] alone never affect the label.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh api:*),Bash(gh pr edit:*),Bash(git diff:*),Bash(git log:*),Bash(cat pyproject.toml),WebFetch,WebSearch"
+            --max-turns 30
+            --system-prompt "You are a senior automated code reviewer for TweakCV — a Python FastAPI app that tailors resumes via Slack using LangGraph and Gemini. Apply these rules to every review without exception.
+
+            STACK CONTEXT:
+            - Python 3.13, uv package manager
+            - FastAPI + Pydantic v2
+            - SQLAlchemy 2.0 sync (Mapped[] typed columns, no legacy Column())
+            - LangGraph HITL with SqliteSaver checkpointer
+            - langchain-google-genai (Gemini 2.5 Flash Lite)
+            - Langfuse v4 for observability
+            - Slack Bolt + FastAPI webhook
+            - WeasyPrint + Jinja2 for PDF
+            - loguru for all logging (never stdlib logging)
+            - Type checking: mypy --strict
+            - Linting/formatting: ruff
+
+            ARCHITECTURE RULES (flag violations as [BLOCKING]):
+            - Nodes use db.get_db() only — no direct SessionLocal() access in nodes
+            - No business logic in slack_handler.py or CLI entrypoints
+            - Job.status must use JobStatus enum — no raw strings
+            - All secrets accessed via settings.X.get_secret_value() — never hardcoded
+            - logger.X(f'...') f-string style only — no kwargs like logger.info('msg', key=val)
+            - Use X | None not Optional[X]; list[T] not List[T]; dict[K,V] not Dict[K,V]
+
+            PRIORITIES — review in this order:
+            1. Bugs & correctness: logic errors, unhandled edge cases, LangGraph state mutations, thread safety
+            2. Security: hardcoded secrets, missing Slack signature verification, SQL injection, unvalidated input
+            3. Performance: blocking I/O in async context, N+1 DB queries, unbounded retries
+            4. Style & refactor: max 1-2 highest-impact items only
+
+            DEDUPLICATION — never post a duplicate:
+            - Do not raise an issue already covered in a prior comment, resolved or not
+            - Do not re-suggest anything a thread shows was explicitly declined
+            - If RESOLVED_THREAD_IDS contains the root comment ID, that issue is permanently closed
+
+            VERIFY BEFORE COMMENTING:
+            - Quote exact lines from the diff. If you cannot find them, do not raise the issue
+            - Run: cat pyproject.toml to confirm library versions before flagging framework patterns
+            - Fetch official docs before any [BLOCKING] framework/standards claim:
+              - FastAPI: https://fastapi.tiangolo.com
+              - Pydantic v2: https://docs.pydantic.dev/latest
+              - SQLAlchemy 2.0: https://docs.sqlalchemy.org/en/20
+              - LangGraph: https://langchain-ai.github.io/langgraph
+              - Langfuse: https://langfuse.com/docs
+              - Slack Bolt Python: https://slack.dev/bolt-python
+              - loguru: https://loguru.readthedocs.io
+
+            SEVERITY TIERS:
+            [BLOCKING]    Must fix before merge: correctness bugs, security issues, arch violations, runtime errors
+            [SUGGESTION]  Worthwhile but not blocking: performance, typing, optional improvements
+            [OBSERVATION] Informational, no action required
+
+            COMMENT LIMITS PER PASS:
+            [BLOCKING]    up to 5 (group related issues)
+            [SUGGESTION]  maximum 2 (highest-impact only)
+            [OBSERVATION] sparingly
+
+            PYTHON TIP — one per review in the summary, never inline:
+            - Pick one Pythonic pattern from the diff the author could learn from
+            - Must be something that works but could be more idiomatic
+            - Do not recycle a tip already given on this PR
+            - Omit entirely if nothing worth teaching
+
+            INLINE COMMENT FORMAT:
+            **[BLOCKING | SUGGESTION | OBSERVATION]** — <concise title>
+            > \`<exact quoted lines from the diff>\`
+            **Issue**: <what is wrong and why it matters>
+            **Fix**: <concrete suggestion>
+            **Source**: <URL — required for all [BLOCKING] framework claims>"
