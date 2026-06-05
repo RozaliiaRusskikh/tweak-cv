@@ -23,7 +23,7 @@ Add these scopes:
 |---|---|
 | `chat:write` | Post resume review messages to a channel |
 | `chat:write.public` | Post to channels the bot hasn't joined |
-| `channels:history` | Read thread replies (edit text capture) |
+| `channels:history` | Read channel messages (JD submissions + edit thread replies) |
 
 Click **Save Changes** after adding scopes.
 
@@ -93,26 +93,22 @@ In the left sidebar: **Event Subscriptions**
 
 ## 7. Verify Everything is Working
 
-Run the stack:
+Start the stack:
 
 ```bash
 docker compose up --build
 ```
 
-Then in a separate terminal, run the CLI:
-
-```bash
-python main.py "Senior Python Engineer at Acme Corp..."
-```
-
-You should see a resume review message appear in the channel with Approve / Edit / Reject buttons.
+Then **paste a job description** (≥ 100 characters) into the Slack channel you configured. You should see the bot post a tailored resume with Approve / Edit / Reject buttons within a minute or two.
 
 **If no message appears:**
 
+- Check **Event Subscriptions** shows **Verified ✓** and `message.channels` is subscribed
 - Check **Interactivity** is still enabled and shows **Verified ✓**
 - Check ngrok is running and the URL matches what's in Slack
 - Check logs: `docker compose logs app --tail=50` — look for `POST /slack/events 200`
 - Check the signing secret — `SLACK_SIGNING_SECRET` in `.env` must match exactly what's shown under **Basic Information → App Credentials**
+- Make sure the bot is a member of the channel (invite it with `/invite @TweakCV`)
 
 ---
 
