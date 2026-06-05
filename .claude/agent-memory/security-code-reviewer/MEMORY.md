@@ -1,0 +1,1 @@
+- [Project Security Patterns](project-security-patterns.md) — Confirmed secure patterns, recurring anti-patterns, and safety-critical functions in tweak-cv

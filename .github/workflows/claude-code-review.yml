@@ -145,6 +145,12 @@ jobs:
               ### Fixed Since Last Review
               <items fixed since LAST_SHA — omit on first review>
 
+              ### Recommendations
+              <Suggestions for improvement, refactoring opportunities, or best practices — omit if none>
+
+              ### Approval Status
+              APPROVED — no blocking issues, ready to merge | CHANGES REQUESTED — blocking issues must be resolved first
+
               ### Looks Good
               <1-2 genuine callouts — omit if nothing stands out>
 
@@ -152,6 +158,9 @@ jobs:
               <1 Pythonic pattern from the diff worth learning — not a bug, a growth moment>
               <2-3 sentences: what it is, why it matters, concrete example from their code>
               📖 <link to official docs>
+
+              ### Obstacles Encountered
+              <Any issues during the review: files that couldn't be read, commands that failed, diffs that were unavailable, workarounds used — omit if none>
 
               <!-- claude-review-sha:${{ steps.meta.outputs.sha }} -->
 

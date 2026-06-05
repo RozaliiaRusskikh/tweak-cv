@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "langgraph>=0.2.0",
     "langchain-google-genai>=2.0.0",
-    "langfuse>=2.0.0",
+    "langfuse>=4.0.0",
     "slack-bolt>=1.21.0",
     "fastapi>=0.115.0",
     "uvicorn>=0.32.0",
@@ -19,6 +19,7 @@ dependencies = [
     "pydantic-settings>=2.6.0",
     "click>=8.1.0",
     "loguru>=0.7.0",
+    "langgraph-checkpoint-sqlite>=3.1.0",
 ]
 
 [dependency-groups]
@@ -53,3 +54,7 @@ plugins = ["pydantic.mypy"]
 pythonpath = ["."]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = [
+    "evals: integration eval tests that call real LLMs (skipped by default)",
+]
+addopts = "-m 'not evals'"

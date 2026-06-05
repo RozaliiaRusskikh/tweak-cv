@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Edit|MultiEdit|Write",
+        "matcher": "Edit|MultiEdit|Write|Read|Grep",
         "hooks": [
           {
             "type": "command",
@@ -19,6 +19,21 @@
             "type": "command",
             "statusMessage": "Formatting and linting...",
             "command": "jq -r '.tool_input.file_path' | { read -r f; [[ \"$f\" == *.py ]] && cd \"$CLAUDE_PROJECT_DIR\" && uv run ruff format \"$f\" && uv run ruff check \"$f\" --fix || true; }"
+          },
+          {
+            "type": "command",
+            "statusMessage": "Syncing prompts to Langfuse...",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; [[ \"$f\" == */harness.json ]] && cd \"$CLAUDE_PROJECT_DIR\" && uv run python -m tweakcv.seed_prompts || true; }"
+          },
+          {
+            "type": "command",
+            "statusMessage": "Running tests...",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; [[ \"$f\" == */harness.json ]] && cd \"$CLAUDE_PROJECT_DIR\" && uv run pytest -q 2>&1 || true; }"
+          },
+          {
+            "type": "command",
+            "statusMessage": "Syncing eval dataset to Langfuse...",
+            "command": "jq -r '.tool_input.file_path' | { read -r f; [[ \"$f\" == */dataset.json ]] && cd \"$CLAUDE_PROJECT_DIR\" && uv run python -m tweakcv.seed_evals || true; }"
           }
         ]
       }
