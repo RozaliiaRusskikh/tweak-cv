@@ -1,13 +1,13 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at `specs/002-resume-tailoring-cli/plan.md`
+at `specs/resume-tailoring-cli/plan.md`
 <!-- SPECKIT END -->
 
 ## Before Writing Code
 
 - See README.md for project overview.
-- Read the relevant contract in `specs/002-resume-tailoring-cli/contracts/` before touching any router, schema, or response model.
+- Read the relevant contract in `specs/resume-tailoring-cli/contracts/` before touching any router, schema, or response model.
 - Examine existing code for similar functionality, style, and patterns.
 - Plan the simplest solution that meets requirements and fits the existing architecture.
 - Check official docs when needed: [FastAPI](https://fastapi.tiangolo.com), [Python 3.13](https://docs.python.org/3.13/), [Pydantic v2](https://docs.pydantic.dev/), [SQLAlchemy 2.0](https://docs.sqlalchemy.org/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Langfuse](https://langfuse.com/docs), [Slack Bolt](https://slack.dev/bolt-python/), [WeasyPrint](https://doc.courtbouillon.org/weasyprint/).

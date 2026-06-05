@@ -8,9 +8,8 @@ services:
       - .env
     volumes:
       - tweakcv_data:/app/data
-      - tweakcv_output:/app/output
+      - ./output/resumes:/app/output/resumes
     restart: unless-stopped
 
 volumes:
   tweakcv_data:
-  tweakcv_output:
