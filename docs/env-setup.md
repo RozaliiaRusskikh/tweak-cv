@@ -10,13 +10,23 @@ cp .env.example .env
 
 ## GEMINI_API_KEY
 
-**What it is**: API key for Gemini 2.0/2.5 Flash — the LLM used for all resume tailoring.
+**What it is**: API key for Gemini 2.5 Flash Lite — the LLM used for all resume tailoring (analyze, tailor, edit).
 
 **How to get it**:
 1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
 2. Sign in with a Google account (no credit card required for free tier)
 3. Click **Create API key**
 4. Copy the key — it starts with `AIza...`
+
+---
+
+## GEMINI_API_KEY_EVAL
+
+**What it is**: Optional separate API key used only by the eval runner (`evals/run_evals.py --regen`). Keeps eval runs from consuming your production quota.
+
+**How to get it**: Create a second key at the same link above. Both keys get their own free-tier quota (20 requests/day).
+
+If not set, the eval runner falls back to `GEMINI_API_KEY`.
 
 ---
 
@@ -79,6 +89,61 @@ For local dev, run `ngrok http 3000` first to get the public URL.
 ### LANGFUSE_HOST
 
 Leave as `https://cloud.langfuse.com` (the default Langfuse Cloud). Only change this if you self-host Langfuse.
+
+### Prompt sync
+
+Prompts are defined in `tweakcv/harness.json` and mirrored to Langfuse.
+
+### LLM-as-a-Judge Evaluator (set up after first run)
+
+Quality scoring is done entirely by Langfuse — there is no inline LLM judge in the app code. After your first successful run, configure a native Langfuse evaluator so every future trace is auto-scored:
+
+1. Seed the `quality-judge` prompt to Langfuse first (if you haven't already):
+   ```bash
+   uv run python -m tweakcv.seed_prompts
+   ```
+2. Go to **Evaluation** → **Evaluators** → **Create evaluator**
+3. Set **Name**: `quality-judge`
+4. Set **Type**: `LLM-as-a-judge`
+5. Under **Model**, choose any provider/model available in your Langfuse account (e.g. `gpt-4o-mini` or `gemini-1.5-flash`)
+6. Under **Prompt template**, select the `quality-judge` prompt from the dropdown (seeded in step 1)
+7. Map variables:
+   - `{{input}}` → trace **input** (the job description)
+   - `{{output}}` → trace **output** (the tailored resume)
+8. Set **Score name**: `quality_judge`
+9. Set **Trace filter**: `name = resume-tailoring`
+10. Click **Save** — Langfuse will auto-run this evaluator on every new matching trace
+
+You can also trigger it manually on any existing trace: open the trace → **Scores** tab → **Run evaluator**.
+
+**Push local → Langfuse** (run after editing `harness.json`):
+```bash
+uv run python -m tweakcv.seed_prompts
+```
+
+**Pull Langfuse → local** (run after editing a prompt in the Langfuse UI):
+```bash
+uv run python -m tweakcv.pull_prompts
+```
+
+### Eval dataset sync
+
+Eval examples are defined in `evals/dataset.json` and mirrored to Langfuse Datasets for UI visibility.
+
+**Push local → Langfuse** (run after editing `evals/dataset.json`):
+```bash
+uv run python -m tweakcv.seed_evals
+```
+
+**Pull Langfuse → local** (run after adding/editing examples in the Langfuse UI):
+```bash
+uv run python -m tweakcv.pull_evals
+```
+
+Or sync everything at once:
+```bash
+uv run python evals/sync_langfuse.py
+```
 
 ---
 
