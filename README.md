@@ -14,6 +14,18 @@ Paste a job description → AI tailors your resume → review in Slack → PDF s
 
 All scores + user Approve/Reject are logged to Langfuse.
 
+## Make It Yours
+
+This repo is built around one person's resume, but everything personal lives
+in a few files. To reuse it for your own job search:
+
+1. Replace `tweakcv/base_resume.json` with your resume
+2. Replace `tweakcv/personal.json` with your own context/voice (optional)
+3. Copy `.env.example` → `.env` and fill in your own Gemini, Slack, and Langfuse keys
+4. Create your own Slack app + channel
+
+Full walkthrough: [docs/personalize.md](docs/personalize.md)
+
 ## Stack
 
 | | |
