@@ -118,7 +118,7 @@ Quality scoring is done entirely by Langfuse — there is no inline LLM judge in
 
 To run it on demand:
 - **One trace**: open the trace → **Scores** tab → **Run evaluator**
-- **Many traces**: from the evaluator's page, use **batched evaluation of historic observations** (see the "Read the docs" link there)
+- **Many traces**: enable **Fast Mode** on the evaluator first, then go to **Traces**, filter/select the rows you want, and **Actions → Evaluate**
 
 (If you ever want it to run automatically instead, turn **"Run on live incoming observations"** on — this also flips status to Active.)
 
