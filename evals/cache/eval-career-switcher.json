@@ -1,0 +1,44 @@
+{
+  "tailored": {
+    "summary": "I am a Backend Software Engineer with 3 years of experience in Python, specializing in REST API development and unit testing. I have a proven track record of building robust backend services and integrating tests into CI/CD pipelines, aligning with BuildRight's focus on Python, PostgreSQL, and Git.",
+    "experience": [
+      {
+        "company": "Startup QA",
+        "role": "Software Test Engineer",
+        "dates": "Mar 2021 \n\u2013 Present",
+        "bullets": [
+          "Wrote 400+ automated test cases using Python and pytest covering REST API endpoints",
+          "Maintained PostgreSQL test databases and wrote SQL queries for data validation",
+          "Integrated tests into CI/CD pipelines via GitHub Actions",
+          "Collaborated with backend engineers to reproduce and document bugs"
+        ]
+      },
+      {
+        "company": "Dev Bootcamp",
+        "role": "Student Software Developer",
+        "dates": "Jan 2020 \n\u2013 Feb 2021",
+        "bullets": [
+          "Built a CRUD web app with Python and Flask as capstone project",
+          "Wrote unit tests with pytest and used Git for version control"
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "pytest",
+      "PostgreSQL",
+      "Git",
+      "GitHub Actions",
+      "SQL",
+      "Selenium",
+      "REST API testing"
+    ],
+    "education": [
+      {
+        "institution": "Dev Bootcamp",
+        "degree": "Certificate in Software Development",
+        "year": "2021"
+      }
+    ]
+  }
+}

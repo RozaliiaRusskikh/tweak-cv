@@ -1,0 +1,45 @@
+{
+  "tailored": {
+    "summary": "I am a Staff Engineer with extensive experience in designing and implementing robust, high availability payment processing systems. I bring a proven track record in distributed systems, event-driven architecture using Kafka, and Python development. My expertise aligns with building scalable solutions and providing technical leadership in the FinTech space.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Senior Software Engineer",
+        "dates": "Jan 2022 \n\u2013 Present",
+        "bullets": [
+          "Designed event-driven architecture using Kafka for real-time order processing, ensuring high availability for critical payment processing systems.",
+          "Built high-availability payment APIs handling $10M/day in transactions, leveraging distributed systems principles.",
+          "Led architecture review for distributed microservices migration, focusing on scalability and resilience.",
+          "Mentored 4 engineers; drove technical standards across the team, contributing to overall technical leadership."
+        ]
+      },
+      {
+        "company": "Beta Systems",
+        "role": "Software Engineer",
+        "dates": "Jun 2019 \n\u2013 Dec 2021",
+        "bullets": [
+          "Built Python backend services for financial data processing, supporting critical payment processing systems.",
+          "Implemented retry logic and circuit breakers for high-availability requirements in distributed systems."
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "Kafka",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "Kubernetes",
+      "distributed systems",
+      "event-driven architecture",
+      "high availability"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}

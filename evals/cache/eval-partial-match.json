@@ -1,0 +1,32 @@
+{
+  "tailored": {
+    "summary": "I am a Senior Software Engineer with a passion for building robust data pipelines and integrating machine learning models into production systems. I bring expertise in Python, MLOps, and model deployment, with a proven track record in feature engineering and data pipeline development. My experience includes leveraging tools like Airflow and scikit-learn to drive impactful results and optimize user experiences through A/B testing.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Senior Software Engineer",
+        "dates": "Jan 2022 \n\u2013 Present",
+        "bullets": [
+          "Integrated scikit-learn models into production REST APIs, enabling efficient model deployment.",
+          "Built Airflow data pipelines processing 1M records/day, ensuring reliable data flow for machine learning applications.",
+          "Ran A/B tests to measure feature impact across 200k users, informing data-driven product decisions."
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "Airflow",
+      "scikit-learn",
+      "Docker",
+      "PostgreSQL",
+      "pandas"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}
