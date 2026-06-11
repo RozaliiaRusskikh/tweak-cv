@@ -114,17 +114,11 @@ class TailoredResumeOutput(BaseModel):
     skills: list[str]
     education: list[EducationEntry]
 
-class QualityJudgeOutput(BaseModel):
-    """Output of quality-judge harness (fires only when kw_coverage in 0.4–0.6)"""
-    score: float     # 0.0 – 1.0
-    reasoning: str
-
 class ScoreResult(BaseModel):
     """Internal scoring result; stored as dict in TailorState.scores"""
     keyword_coverage: float
     no_hallucination: bool
     edit_fidelity: float | None    # None when not in edit loop
-    quality: float | None          # None when kw_coverage not in 0.4–0.6
     needs_retry: bool              # True when keyword_coverage < 0.5
 ```
 
