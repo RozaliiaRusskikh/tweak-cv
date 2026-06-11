@@ -42,7 +42,7 @@
 
 ### Stale Sweep: Startup-Only, No Scheduler
 
-- **Decision**: Synchronous `stale_sweep()` in `main.py` startup, completes in < 1 second
+- **Decision**: Synchronous `stale_sweep()` (in `runner.py`), called from `slack_handler.py`'s startup lifespan, completes in < 1 second
 - **Rationale**: Personal single-user tool. If the app is running, cleanup runs. APScheduler or background threads add complexity (daemon threads, signal handling, cross-thread DB sessions) with no benefit for a tool that runs on-demand.
 - **Alternatives considered**: APScheduler — background thread complexity; cron job — external dependency; no sweep — stale jobs linger forever.
 

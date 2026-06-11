@@ -57,7 +57,7 @@
 
 **Goal**: CLI accepts a JD → LangGraph tailors base resume → Slack message sent with scores and Approve/Edit/Reject buttons.
 
-**Independent Test**: `python main.py "Senior Python Engineer at Acme..."` → Slack message appears within 2 min with resume text, `keyword_coverage`, `no_hallucination`, and three action buttons.
+**Independent Test**: Post a job description (≥100 chars) as a top-level message in the Slack channel → Slack message appears within 2 min with resume text, `keyword_coverage`, `no_hallucination`, and three action buttons.
 
 ### Tests — User Story 1
 
@@ -85,11 +85,11 @@
 - [x] T042 Write `route_feedback()` all branches — `tweakcv/graph.py`
 - [x] T043 Complete `build_graph()` with all edges + conditional routing — `tweakcv/graph.py`
 - [x] T044 Write `error_node()` — `tweakcv/nodes/error.py`
-- [x] T045 Startup validation + `load_harnesses` + `init_db` — `tweakcv/main.py`
-- [x] T046 Write `stale_sweep()` — `tweakcv/main.py`
-- [x] T047 Write `@click.command()` with arg + `--file` flag — `tweakcv/main.py`
-- [x] T048 Job row creation + Langfuse trace + initial TailorState — `tweakcv/main.py`
-- [x] T049 `graph.invoke()` call + exit codes — `tweakcv/main.py`
+- [x] T045 Startup validation + `load_harnesses` + `init_db` — `tweakcv/slack_handler.py` (`_lifespan()`)
+- [x] T046 Write `stale_sweep()` — `tweakcv/runner.py`
+- [ ] T047 Write `@click.command()` with arg + `--file` flag — descoped; Slack message handler is the sole entrypoint, no separate CLI exists
+- [x] T048 Job row creation + Langfuse trace + initial TailorState — `tweakcv/runner.py` (`run_job()`)
+- [x] T049 `graph.invoke()` call — `tweakcv/runner.py` (`run_job()`); no exit codes (not a CLI)
 
 **Checkpoint**: Tests pass ✅ — Slack smoke test pending real credentials
 
@@ -158,7 +158,7 @@
 
 - [x] T070 Write `@bolt_app.action("reject_resume")` handler — `tweakcv/slack_handler.py`
 - [x] T071 `route_feedback("reject")` → END; `route_feedback("expired")` → END — `tweakcv/graph.py` ✅
-- [x] T072 `stale_sweep()` handles zero stale jobs gracefully — `tweakcv/main.py` ✅
+- [x] T072 `stale_sweep()` handles zero stale jobs gracefully — `tweakcv/runner.py` ✅
 
 **Checkpoint**: Tests pass ✅
 

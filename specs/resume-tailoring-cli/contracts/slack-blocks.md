@@ -36,7 +36,7 @@ Handled in `slack_handler.py` via `slack_bolt.App` action handlers.
 | Edit button | `edit_resume` | `handle_edit` | (waits for thread reply) |
 | Reject button | `reject_resume` | `handle_reject` | `"reject"` |
 | Thread message | `message.channels` event | `handle_message` | `"edit:<user text>"` |
-| Startup sweep | `stale_sweep()` in `main.py` | direct `graph.invoke` | `"expired"` |
+| Startup sweep | `stale_sweep()` (`runner.py`), called from `slack_handler.py` lifespan | direct `graph.invoke` | `"expired"` |
 
 ## Edit Text Capture Flow
 

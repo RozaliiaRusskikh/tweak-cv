@@ -59,7 +59,7 @@ Defined as a `TypedDict` in `graph.py`. LangGraph merges partial dicts returned 
 class TailorState(TypedDict):
     job_id:             int
     thread_id:          str             # uuid4; SqliteSaver checkpoint key
-    langfuse_trace_id:  str             # set once in main.py before graph starts
+    langfuse_trace_id:  str             # set once in runner.py::run_job() before graph starts
     company:            str             # set by analyze_node
     role:               str             # set by analyze_node
     jd_text:            str             # raw CLI input
