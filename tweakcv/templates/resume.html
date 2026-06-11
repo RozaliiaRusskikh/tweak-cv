@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: Letter; margin: 1.1cm 1.4cm; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Liberation Sans', Arial, sans-serif;
+    font-size: 10pt;
+    color: #1a1a1a;
+    background: #fff;
+  }
+  h1 { font-size: 18pt; font-weight: 700; letter-spacing: 0.3px; }
+  .contact {
+    font-size: 9pt;
+    color: #444;
+    margin-top: 3px;
+    margin-bottom: 8px;
+  }
+  .contact span { margin-right: 10px; }
+  hr { border: none; border-top: 1.5px solid #1a1a1a; margin: 5px 0 8px; }
+  h2 {
+    font-size: 10.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-bottom: 0.5px solid #aaa;
+    padding-bottom: 1px;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  .summary { font-size: 10pt; line-height: 1.4; margin-bottom: 2px; }
+  .job { margin-bottom: 7px; }
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .job-title { font-weight: 700; font-size: 10pt; }
+  .job-company { font-style: italic; color: #333; }
+  .job-dates { font-size: 9pt; color: #555; white-space: nowrap; }
+  ul.bullets {
+    margin-top: 2px;
+    margin-left: 14px;
+    line-height: 1.35;
+  }
+  ul.bullets li { margin-bottom: 1px; }
+  .skills-list { line-height: 1.5; font-size: 10pt; }
+  .edu-entry {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+  }
+  .edu-name { font-weight: 700; }
+  .edu-year { font-size: 9pt; color: #555; }
+</style>
+</head>
+<body>
+
+<h1>{{ resume.name }}</h1>
+<div class="contact">
+  {% if resume.email %}<span>{{ resume.email }}</span>{% endif %}
+  {% if resume.linkedin %}<span>{{ resume.linkedin }}</span>{% endif %}
+  {% if resume.github %}<span>{{ resume.github }}</span>{% endif %}
+</div>
+<hr>
+
+{% if tailored.summary %}
+<h2>Summary</h2>
+<div class="summary">{{ tailored.summary }}</div>
+{% endif %}
+
+{% if tailored.experience %}
+<h2>Experience</h2>
+{% for job in tailored.experience %}
+<div class="job">
+  <div class="job-header">
+    <div>
+      <span class="job-title">{{ job.role }}</span>
+      {% if job.company %} · <span class="job-company">{{ job.company }}</span>{% endif %}
+    </div>
+    <div class="job-dates">{{ job.dates }}</div>
+  </div>
+  {% if job.bullets %}
+  <ul class="bullets">
+    {% for bullet in job.bullets %}{% if bullet and bullet.strip() %}
+    <li>{{ bullet }}</li>
+    {% endif %}{% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+{% if tailored.skills %}
+<h2>Skills</h2>
+<div class="skills-list">{{ tailored.skills | join(' · ') }}</div>
+{% endif %}
+
+{% if tailored.education %}
+<h2>Education</h2>
+{% for edu in tailored.education %}
+<div class="edu-entry">
+  <div>
+    <span class="edu-name">{{ edu.institution }}</span>
+    {% if edu.degree %} — {{ edu.degree }}{% endif %}
+  </div>
+  <div class="edu-year">{{ edu.year }}</div>
+</div>
+{% endfor %}
+{% endif %}
+
+</body>
+</html>
