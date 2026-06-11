@@ -98,6 +98,8 @@ Prompts are defined in `tweakcv/harness.json` and mirrored to Langfuse.
 
 Quality scoring is done entirely by Langfuse — there is no inline LLM judge in the app code. After your first successful run, configure a native Langfuse evaluator so every future trace is auto-scored:
 
+**Current status**: configured directly in Langfuse only (not in this repo's `harness.json`/code).
+
 1. Seed the `quality-judge` prompt to Langfuse first (if you haven't already):
    ```bash
    uv run python -m tweakcv.seed_prompts
@@ -111,10 +113,14 @@ Quality scoring is done entirely by Langfuse — there is no inline LLM judge in
    - `{{input}}` → trace **input** (the job description)
    - `{{output}}` → trace **output** (the tailored resume)
 8. Set **Score name**: `quality_judge`
-9. Set **Trace filter**: `name = resume-tailoring`
-10. Click **Save** — Langfuse will auto-run this evaluator on every new matching trace
+9. Set **Trace filter**: `name = resume-tailoring` (scopes which traces this evaluator applies to)
+10. Leave **"Run on live incoming observations"** off and click **Save** — the evaluator is created as **Inactive** and will not run on its own
 
-You can also trigger it manually on any existing trace: open the trace → **Scores** tab → **Run evaluator**.
+To run it on demand:
+- **One trace**: open the trace → **Scores** tab → **Run evaluator**
+- **Many traces**: from the evaluator's page, use **batched evaluation of historic observations** (see the "Read the docs" link there)
+
+(If you ever want it to run automatically instead, turn **"Run on live incoming observations"** on — this also flips status to Active.)
 
 **Push local → Langfuse** (run after editing `harness.json`):
 ```bash
