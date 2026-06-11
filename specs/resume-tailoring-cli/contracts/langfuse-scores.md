@@ -31,7 +31,6 @@ To use this for LLM-as-a-judge "Quality Judge" scoring in Langfuse, configure th
 | `keyword_coverage` | float | `nodes/score.py` | After `tailor_node` and `edit_node` | 0.0 – 1.0 |
 | `no_hallucination` | float | `nodes/score.py` | After `tailor_node` and `edit_node` | 0.0 (fail) or 1.0 (pass) |
 | `edit_fidelity` | float | `nodes/score.py` | `edit_node` only | 0.0 – 1.0 |
-| `quality_judge` | float | `nodes/score.py` | When `0.4 ≤ keyword_coverage ≤ 0.6` | 0.0 – 1.0 |
 | `user_approval` | float | `nodes/finalize.py` (approve) or `slack_handler.py` (reject) | On user Approve or Reject | 0.0 or 1.0 |
 
 ### Score attachment pattern
