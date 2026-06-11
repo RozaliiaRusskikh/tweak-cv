@@ -69,7 +69,7 @@ logger.error("...")
 
 | Module | What to cover |
 |---|---|
-| `nodes/score.py` | `kw_coverage` calculation; `_detect_new_entities()` (hallucination guard); `needs_retry` trigger (`kw < 0.5`); `quality_judge` condition (`0.4 ≤ kw ≤ 0.6`); `edit_fidelity` |
+| `nodes/score.py` | `kw_coverage` calculation; `_detect_new_entities()` (hallucination guard); `needs_retry` trigger (`kw < 0.5`); `edit_fidelity` |
 | `graph.py` | `route_feedback()` — all branches: `"approve"`, `"reject"`, `"edit:..."`, `"expired"` |
 | `harness_loader.py` | `load_harnesses()` parses valid JSON; `get_prompt()` falls back to `harness["system_prompt"]` when Langfuse raises |
 | `slack_handler.py` | HMAC signature verification (valid sig passes, bad sig fails, replay window rejected) |
