@@ -20,9 +20,9 @@ langfuse.start_observation(
 
 ### Tailored resume output
 
-`nodes/score.py::_attach_trace_output()` runs after every `tailor_node`/`edit_node` call and creates a `tailored-resume` observation on the trace with `output=<tailored resume dict>`, via the standard (non-deprecated) `output=` parameter on `start_observation()`. Each call adds a new observation reflecting that iteration's resume.
+`nodes/score.py::_attach_trace_output()` runs after every `tailor_node`/`edit_node` call and creates a `tailored-resume` observation on the trace with `input={base_resume, keywords}` and `output=<tailored resume dict>`, via the standard (non-deprecated) `input=`/`output=` parameters on `start_observation()`. Each call adds a new observation reflecting that iteration's resume.
 
-To use this for LLM-as-a-judge "Quality Judge" scoring in Langfuse, configure the evaluator's target scope as **Observation** with `name == "tailored-resume"`.
+To use this for LLM-as-a-judge "Quality Judge" scoring in Langfuse, configure the evaluator's target scope as **Observation** with `name == "tailored-resume"`. The evaluator can compare `output` (tailored resume) against `input.base_resume` (hallucination ground truth) and `input.keywords` (JD requirements).
 
 ## Scores
 

@@ -17,7 +17,7 @@
 - [x] T001 Create `tweakcv/` package directory with `__init__.py` and subdirectories: `nodes/`, `tests/nodes/`, `tests/`, `evals/`, `templates/`, `output/` (gitkeep)
 - [x] T002 Write `pyproject.toml`: all dependencies (`langgraph`, `langchain-google-genai`, `langfuse`, `slack-bolt`, `fastapi`, `uvicorn`, `sqlalchemy`, `weasyprint`, `jinja2`, `python-dotenv`, `pydantic[email]`, `click`, `loguru`), dev deps (`pytest`, `pytest-mock`, `ruff`, `mypy`), ruff + mypy config — `pyproject.toml`
 - [x] T003 [P] Write `.env.example` with all 8 vars: `GEMINI_API_KEY`, `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET`, `SLACK_CHANNEL_ID`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, `LANGFUSE_HOST`, `DATABASE_URL` — `.env.example`
-- [x] T004 [P] Write `harness.json` with 4 complete harness entries (`analyze-jd` gemini-2.0-flash 30s, `tailor-resume` gemini-2.0-flash 60s, `edit-resume` gemini-2.5-flash 60s, `quality-judge` gemini-2.5-flash 30s) — `tweakcv/harness.json`
+- [x] T004 [P] Write `harness.json` with 3 complete harness entries (`analyze-jd`, `tailor-resume`, `edit-resume`) — `tweakcv/harness.json`
 - [x] T005 [P] Write `base_resume.json` with the correct schema: `name`, `summary`, `experience[]` (company/role/dates/bullets), `skills[]`, `education[]` (institution/degree/year) — `tweakcv/base_resume.json`
 - [x] T006 [P] Write `templates/resume.html`: Jinja2 template with inline CSS for WeasyPrint — `tweakcv/templates/resume.html`
 - [x] T007 Write `Dockerfile`: `python:3.13-slim` base; WeasyPrint system libs; uv; `CMD uvicorn tweakcv.slack_handler:app` — `Dockerfile`
@@ -63,7 +63,7 @@
 
 - [x] T024 [P] [US1] `kw_coverage` calculation tests — `tests/nodes/test_score.py`
 - [x] T025 [P] [US1] `_detect_new_entities()` hallucination tests — `tests/nodes/test_score.py`
-- [x] T026 [P] [US1] `needs_retry` and quality judge conditional tests — `tests/nodes/test_score.py`
+- [x] T026 [P] [US1] `needs_retry` conditional tests — `tests/nodes/test_score.py`
 - [x] T027 [P] [US1] `analyze_node()` returns partial state (mocked LLM) — `tests/nodes/test_analyze.py`
 - [x] T028 [P] [US1] `route_feedback()` approve/reject routing — `tests/test_graph.py`
 - [x] T029 [P] [US1] `route_feedback()` edit routing + hard stop at iteration 4 — `tests/test_graph.py`
@@ -73,7 +73,7 @@
 
 - [x] T031 Write `compute_keyword_coverage()`, `_detect_new_entities()` — `tweakcv/nodes/score.py`
 - [x] T032 Write `compute_edit_fidelity()` — `tweakcv/nodes/score.py`
-- [x] T033 Write `_call_quality_judge()` — `tweakcv/nodes/score.py`
+- [ ] T033 Write `_call_quality_judge()` — descoped; quality scoring is provided by Langfuse's native LLM-as-a-judge evaluator against the `tailored-resume` trace observation (`score.py::_attach_trace_output`), not application code
 - [x] T034 Write `score()` orchestrator + `_attach_langfuse_scores()` — `tweakcv/nodes/score.py`
 - [x] T035 Write `analyze_node()` — `tweakcv/nodes/analyze.py`
 - [x] T036 Write `tailor_node()` with inline scoring — `tweakcv/nodes/tailor.py`

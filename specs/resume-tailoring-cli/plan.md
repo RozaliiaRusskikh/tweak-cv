@@ -69,8 +69,8 @@ specs/resume-tailoring-cli/
 ```text
 tweakcv/
 ├── runner.py            # run_job() + stale_sweep(), shared by slack_handler.py
-├── harness.json         # 4 harness entries: analyze-jd, tailor-resume, edit-resume, quality-judge
-├── schemas.py           # Pydantic: JDAnalysisOutput, TailoredResumeOutput, QualityJudgeOutput, ScoreResult
+├── harness.json         # 3 harness entries: analyze-jd, tailor-resume, edit-resume
+├── schemas.py           # Pydantic: JDAnalysisOutput, TailoredResumeOutput, ScoreResult
 ├── harness_loader.py    # load_harnesses(), get_prompt() (Langfuse→fallback), get_llm()
 ├── graph.py             # TailorState TypedDict + LangGraph StateGraph + route_feedback()
 ├── db.py                # SQLAlchemy: Job, ResumeVersion models + init_db() + get_db()
@@ -81,7 +81,7 @@ tweakcv/
 │   ├── notify.py        # Block Kit post/update; handles iteration warning (==3) and Edit removal (>=4)
 │   ├── await_feedback.py # interrupt(); hard stop guard at iteration >=4
 │   ├── edit.py          # → TailoredResumeOutput; calls score inline; iteration++; saves ResumeVersion
-│   ├── score.py         # kw_coverage + no_hallucination + edit_fidelity + quality_judge (borderline only)
+│   ├── score.py         # kw_coverage + no_hallucination + edit_fidelity
 │   ├── error.py         # Slack warning + jobs.status='failed' + Langfuse ERROR trace
 │   └── finalize.py      # WeasyPrint PDF → output/ + jobs.status='approved' + user_approval score
 ├── evals/
@@ -210,15 +210,10 @@ class TailoredResumeOutput(BaseModel):
     skills: list[str]
     education: list[EducationEntry]
 
-class QualityJudgeOutput(BaseModel):
-    score: float          # 0.0 – 1.0
-    reasoning: str
-
 class ScoreResult(BaseModel):
     keyword_coverage: float
     no_hallucination: bool
     edit_fidelity: float | None    # None outside edit loop
-    quality: float | None          # None unless kw_coverage in 0.4–0.6
     needs_retry: bool              # True when keyword_coverage < 0.5
 ```
 
@@ -243,7 +238,7 @@ run_job(jd_text, graph, loading_ts="") -> int
 Review message block order:
 1. `header`: `"{company} – {role}"`
 2. `section`: resume summary
-3. `section`: scores (`keyword_coverage`, `no_hallucination`, `quality_judge` if available)
+3. `section`: scores (`keyword_coverage`, `no_hallucination`)
 4. `context` (only when `iteration == 3`): `"⚠️ This is your last edit"`
 5. `actions`:
    - `approve_resume` — value: `"{job_id}"`, style: `"primary"`
@@ -269,10 +264,11 @@ One trace per job. Scores attached:
 | `keyword_coverage` | float | After `tailor_node`, `edit_node`  | 0.0 – 1.0   |
 | `no_hallucination` | float | After `tailor_node`, `edit_node`  | 0.0 or 1.0  |
 | `edit_fidelity`    | float | `edit_node` only                  | 0.0 – 1.0   |
-| `quality_judge`    | float | When 0.4 ≤ kw_coverage ≤ 0.6     | 0.0 – 1.0   |
 | `user_approval`    | float | Approve (1.0) or Reject (0.0)     | 0.0 or 1.0  |
 
-Langfuse prompt IDs must match `harness.json` `id` fields: `analyze-jd`, `tailor-resume`, `edit-resume`, `quality-judge`.
+Langfuse prompt IDs must match `harness.json` `id` fields: `analyze-jd`, `tailor-resume`, `edit-resume`.
+
+Quality scoring (LLM-as-a-judge) is configured natively in Langfuse against the `tailored-resume` trace observation (see `contracts/langfuse-scores.md`) — not computed by application code.
 
 ---
 
