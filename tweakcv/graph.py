@@ -43,7 +43,7 @@ def route_feedback(state: TailorState) -> str:
     if feedback == "approve":
         return "approve"
     if state.get("iteration", 0) >= 4:
-        logger.warning("route_max_iterations", iteration=state.get("iteration"))
+        logger.warning(f"route_max_iterations iteration={state.get('iteration')}")
         return "reject"
     if feedback.startswith("edit:") or feedback == "edit":
         return "edit"
