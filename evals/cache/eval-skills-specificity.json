@@ -1,0 +1,33 @@
+{
+  "tailored": {
+    "summary": "I am a React Native Engineer with 4 years of experience building cross-platform mobile apps. I have a proven track record of shipping high-quality mobile apps to the App Store and Google Play, and I am proficient in TypeScript, JavaScript, and REST APIs for seamless data integration. My expertise includes implementing robust state management solutions like Redux and leveraging the Expo framework to accelerate development.",
+    "experience": [
+      {
+        "company": "MobileFirst",
+        "role": "React Native Developer",
+        "dates": "Jan 2021 \n\u2013 Present",
+        "bullets": [
+          "Shipped 3 cross-platform React Native mobile apps to the App Store and Google Play.",
+          "Implemented Redux for global state management, reducing component re-renders by 30%.",
+          "Integrated REST APIs for authentication, payments, and real-time notifications using Expo."
+        ]
+      }
+    ],
+    "skills": [
+      "React Native",
+      "TypeScript",
+      "JavaScript",
+      "Redux",
+      "Expo",
+      "REST APIs",
+      "Git"
+    ],
+    "education": [
+      {
+        "institution": "Tech College",
+        "degree": "B.S. Computer Science",
+        "year": "2020"
+      }
+    ]
+  }
+}

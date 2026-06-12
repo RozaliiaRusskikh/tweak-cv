@@ -1,0 +1,32 @@
+{
+  "tailored": {
+    "summary": "I am a Software Engineer with experience building robust backend systems, eager to apply my skills to the blockchain space. I have a strong foundation in Python, FastAPI, and cloud deployment with AWS, Docker, and Kubernetes, and I am excited to leverage this expertise to develop smart contracts and DeFi protocols on Ethereum. My goal is to contribute to innovative blockchain solutions.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Software Engineer",
+        "dates": "Jan 2020 \n\u2013 Present",
+        "bullets": [
+          "Developed REST APIs using Python and FastAPI, enabling efficient data exchange.",
+          "Managed PostgreSQL databases, optimizing performance through complex SQL query writing.",
+          "Deployed and managed services on AWS utilizing Docker and Kubernetes for scalable infrastructure."
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "Kubernetes",
+      "AWS"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}

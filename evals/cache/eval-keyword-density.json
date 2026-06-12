@@ -1,0 +1,40 @@
+{
+  "tailored": {
+    "summary": "I am a Senior Software Engineer with extensive experience in AWS, Terraform, and Kubernetes, specializing in building and maintaining robust cloud infrastructure. I bring a strong background in automation, CI/CD, and monitoring, with a passion for enhancing system reliability and observability. My expertise in infrastructure as code and Python aligns perfectly with the requirements for a DevOps / Platform Engineer.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Senior Software Engineer",
+        "dates": "Jan 2022 \n\u2013 Present",
+        "bullets": [
+          "Managed AWS infrastructure, including EC2, RDS, S3, and CloudWatch, ensuring high availability for production workloads.",
+          "Developed and maintained Terraform modules for infrastructure as code, reducing resource provisioning time by 60% and enhancing automation.",
+          "Implemented a comprehensive observability stack utilizing Prometheus for metrics, Grafana dashboards for visualization, and PagerDuty for alerts.",
+          "Automated application deployments using GitHub Actions CI/CD pipelines integrated with Kubernetes for efficient container orchestration."
+        ]
+      }
+    ],
+    "skills": [
+      "AWS",
+      "Terraform",
+      "Kubernetes",
+      "Docker",
+      "Python",
+      "CI/CD",
+      "Prometheus",
+      "Grafana",
+      "Ansible",
+      "CloudWatch",
+      "EC2",
+      "RDS",
+      "S3"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}

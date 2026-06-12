@@ -1,0 +1,40 @@
+{
+  "tailored": {
+    "summary": "I am a full-stack engineer with a passion for building scalable web applications. I bring extensive experience in developing user-facing features with React and TypeScript, and designing robust Node.js REST APIs backed by PostgreSQL. My goal is to leverage my full-stack expertise to contribute to innovative projects.",
+    "experience": [
+      {
+        "company": "WebCo",
+        "role": "Full Stack Engineer",
+        "dates": "Mar 2022 \n\u2013 Present",
+        "bullets": [
+          "Built React/TypeScript dashboards consumed by 10k users, enhancing user experience and data accessibility.",
+          "Designed and implemented Node.js REST APIs, ensuring efficient data retrieval and manipulation using PostgreSQL."
+        ]
+      },
+      {
+        "company": "Agency Ltd",
+        "role": "Frontend Developer",
+        "dates": "Sep 2019 \n\u2013 Feb 2022",
+        "bullets": [
+          "Delivered 8 client sites using React and TypeScript, meeting diverse project requirements.",
+          "Integrated third-party REST APIs for critical payment and authentication flows, ensuring secure and seamless user transactions."
+        ]
+      }
+    ],
+    "skills": [
+      "React",
+      "TypeScript",
+      "Node.js",
+      "PostgreSQL",
+      "REST APIs",
+      "Git"
+    ],
+    "education": [
+      {
+        "institution": "Online University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}

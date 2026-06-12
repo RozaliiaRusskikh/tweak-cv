@@ -1,0 +1,15 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - tweakcv_data:/app/data
+      - ./output/resumes:/app/output/resumes
+    restart: unless-stopped
+
+volumes:
+  tweakcv_data:

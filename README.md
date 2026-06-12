@@ -6,6 +6,45 @@ Paste a job description → AI tailors your resume → review in Slack → PDF s
 
 ![TweakCV Full Architecture](docs/architecture.png)
 
+### Graph flow (`tweakcv/graph.py`)
+
+```
+START
+  │
+  ▼
+analyze ──error──┐
+  │ok             │
+  ▼               │
+tailor ──error────┤
+  │ok             │
+  ▼               │
+notify             │
+  │                │
+  ▼                │
+await_feedback ────┤  (interrupt — pauses here)
+  │                │
+  ├─approve──> finalize ──> END
+  ├─edit─────> edit ──ok──> notify   (loops back)
+  │              └─error───┤
+  ├─reject───────────────> END
+  ├─expired──────────────> END
+  └─error─────────────────┤
+                           ▼
+                         error ──> END
+```
+
+| Node | File | Role |
+|---|---|---|
+| `analyze` | `tweakcv/nodes/analyze.py` | Calls `analyze-jd` LLM → extracts company, role, keywords |
+| `tailor` | `tweakcv/nodes/tailor.py` | Calls `tailor-resume` LLM, scores, retries once if `needs_retry` |
+| `notify` | `tweakcv/nodes/notify.py` | Posts/updates Slack message with resume + scores + buttons |
+| `await_feedback` | `tweakcv/nodes/await_feedback.py` | `interrupt()` — pauses graph until a Slack button click or thread reply resumes it |
+| `edit` | `tweakcv/nodes/edit.py` | Calls `edit-resume` LLM, increments `iteration`, saves a `ResumeVersion` |
+| `finalize` | `tweakcv/nodes/finalize.py` | Renders + exports the PDF, marks job `approved` |
+| `error` | `tweakcv/nodes/error.py` | Posts a user-friendly Slack error, marks job `failed` |
+
+`route_feedback()` and `build_graph()` (the edges/conditional routing above) live in `tweakcv/graph.py`. The `iteration >= 4` hard stop forces `reject` regardless of feedback.
+
 **Score gates** run on every version before Slack is notified:
 - `keyword_coverage` — % of JD keywords present (retry if < 0.5)
 - `no_hallucination` — no invented companies, dates, or skills
@@ -13,6 +52,18 @@ Paste a job description → AI tailors your resume → review in Slack → PDF s
 - `quality` — LLM judge, fires only when heuristics are borderline (0.4–0.6)
 
 All scores + user Approve/Reject are logged to Langfuse.
+
+## Make It Yours
+
+This repo is built around one person's resume, but everything personal lives
+in a few files. To reuse it for your own job search:
+
+1. Replace `tweakcv/base_resume.json` with your resume
+2. Replace `tweakcv/personal.json` with your own context/voice (optional)
+3. Copy `.env.example` → `.env` and fill in your own Gemini, Slack, and Langfuse keys
+4. Create your own Slack app + channel
+
+Full walkthrough: [docs/personalize.md](docs/personalize.md)
 
 ## Stack
 
@@ -26,22 +77,100 @@ All scores + user Approve/Reject are logged to Langfuse.
 | Observability | Langfuse Hobby (free) |
 | Runtime | Docker + Docker Compose |
 
+## Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) — `brew install uv`
+- [ngrok](docs/ngrok-setup.md) — for Slack webhooks
+
 ## Setup
 
+**1. Environment**
 ```bash
-cp .env.example .env   # then fill in your keys
-docker compose up
+cp .env.example .env
+```
+Fill in all values — see [docs/env-setup.md](docs/env-setup.md) for where to get each one.
+
+**2. Slack app**
+Follow [docs/slack-setup.md](docs/slack-setup.md) to create the app and get your tokens.
+
+**3. ngrok**
+```bash
+ngrok http --url=<your-static-domain> 3000
+```
+See [docs/ngrok-setup.md](docs/ngrok-setup.md) for one-time static domain setup.
+
+**4. Seed prompts to Langfuse** *(optional — app works without this)*
+```bash
+uv run python -m tweakcv.seed_prompts
 ```
 
-## Usage
+## Running
 
 ```bash
-python main.py "$(pbpaste)"   # paste JD from clipboard
+docker compose up --build
 ```
 
-PDFs are saved as `RozaRusskikh_{Role}_2026.pdf`.
+That's it. Once the container is up, **paste a job description into the Slack channel** — the bot picks it up and posts a tailored resume with Approve / Edit / Reject buttons. Approved resumes are saved as PDFs in `output/`.
+
+## Testing
+
+**Unit tests** (no network, mocked LLM/Slack/Langfuse):
+```bash
+uv run pytest
+```
+
+**Eval runner** — checks prompt quality against labelled examples:
+```bash
+uv run python evals/run_evals.py                   # heuristic checks only — zero API calls
+uv run python evals/run_evals.py --threshold 0.9   # stricter pass rate
+uv run python evals/run_evals.py --regen           # re-call LLM, update cache, then check
+```
+
+### How the eval cache works
+
+The eval runner separates **LLM generation** from **checking**:
+
+- `evals/cache/{id}.json` stores the tailored resume output per example.
+- Without `--regen`: loads from cache and runs all heuristic checks locally — instant, no API quota used.
+- With `--regen`: calls the real LLM for every example, saves fresh outputs to cache, then checks.
+
+**Rule: run `--regen` once every time you edit `harness.json`.** After that, normal runs are free.
+
+Checks per example:
+
+| Check | Pass/fail gate | Description |
+|---|---|---|
+| `keyword_coverage` | ✅ | ≥ threshold% of JD keywords present |
+| `no_hallucination` | ✅ | No invented companies or institutions |
+| `no_markdown` | ✅ | No `**bold**` or `_italic_` in output |
+| `first_person_summary` | ✅ | Summary uses "I", not candidate's name |
+| `date_preservation` | ✅ | Dates match base resume exactly |
+| `skills_are_tools` | ✅ | No generic JD phrases in skills list |
+| `quality_judge` | ℹ️ informational | LLM holistic score 0–1 (from cache) |
+
+At least 80% of examples must pass all gate checks for the suite to be green.
+
+### Separate API key for evals
+
+To avoid eval runs consuming your production Gemini quota, add a second key to `.env`:
+```
+GEMINI_API_KEY_EVAL=AIza...your-second-key
+```
+Both keys have their own free-tier quota (20 req/day). `--regen` uses the eval key automatically if set.
+
+### Sync prompts and dataset to Langfuse
+
+```bash
+uv run python evals/sync_langfuse.py            # sync prompts + dataset
+uv run python evals/sync_langfuse.py --prompts  # prompts only
+uv run python evals/sync_langfuse.py --dataset  # dataset only
+```
 
 ## Docs
 
+- [env-setup.md](docs/env-setup.md) — all environment variables
+- [slack-setup.md](docs/slack-setup.md) — Slack app configuration
+- [ngrok-setup.md](docs/ngrok-setup.md) — ngrok tunnel setup
 - [PRD](docs/PRD.md) — product requirements
 - [TRD](docs/TRD.md) — technical requirements & architecture

@@ -1,0 +1,289 @@
+[
+  {
+    "id": "eval-strong-match",
+    "description": "Base resume strongly matches JD — expect high keyword coverage and no hallucination",
+    "jd_text": "Senior Python Engineer at Acme Corp. Build and maintain high-availability microservices. Required: Python, FastAPI, Docker, Kubernetes, PostgreSQL, CI/CD, REST APIs. Preferred: Redis, Celery. Keywords: Python, FastAPI, microservices, Kubernetes, Docker, CI/CD, REST APIs, scalability, reliability.",
+    "base_resume": {
+      "name": "Jane Doe",
+      "summary": "Senior engineer with 6 years building scalable Python backends.",
+      "experience": [
+        {
+          "company": "Acme Corp",
+          "role": "Senior Software Engineer",
+          "dates": "Jan 2022 – Present",
+          "bullets": [
+            "Designed and maintained FastAPI microservices handling 10M requests/day",
+            "Managed Kubernetes clusters and CI/CD pipelines with GitHub Actions",
+            "Reduced PostgreSQL query latency by 40% through indexing and caching with Redis"
+          ]
+        },
+        {
+          "company": "Beta Systems",
+          "role": "Software Engineer",
+          "dates": "Jun 2019 – Dec 2021",
+          "bullets": [
+            "Built REST APIs with Python and FastAPI serving 50k daily users",
+            "Containerized services with Docker; contributed to Kubernetes migration",
+            "Implemented Celery task queues for async processing"
+          ]
+        }
+      ],
+      "skills": ["Python", "FastAPI", "Docker", "Kubernetes", "PostgreSQL", "Redis", "CI/CD", "REST APIs", "Celery"],
+      "education": [{"institution": "State University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["Python", "FastAPI", "microservices", "Kubernetes", "Docker", "CI/CD", "REST APIs"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.8,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true
+    }
+  },
+  {
+    "id": "eval-partial-match",
+    "description": "Base resume partially matches JD — expect moderate coverage, zero hallucination (no invented ML skills)",
+    "jd_text": "Machine Learning Engineer at DataFlow Inc. Build and deploy ML models at scale. Required: Python, PyTorch, MLOps, model deployment, feature engineering. Preferred: Spark, Airflow, Kubeflow. Keywords: machine learning, MLOps, PyTorch, model deployment, feature engineering, data pipeline, A/B testing.",
+    "base_resume": {
+      "name": "Jane Doe",
+      "summary": "Backend engineer with experience in data pipelines and ML model integration.",
+      "experience": [
+        {
+          "company": "Acme Corp",
+          "role": "Senior Software Engineer",
+          "dates": "Jan 2022 – Present",
+          "bullets": [
+            "Integrated scikit-learn models into production REST APIs",
+            "Built Airflow data pipelines processing 1M records/day",
+            "Ran A/B tests to measure feature impact across 200k users"
+          ]
+        }
+      ],
+      "skills": ["Python", "Docker", "PostgreSQL", "pandas", "scikit-learn", "Airflow"],
+      "education": [{"institution": "State University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["Python", "MLOps", "data pipeline", "A/B testing", "model deployment"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.4,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true,
+      "note": "Resume lacks PyTorch/MLOps — model must NOT invent these skills"
+    }
+  },
+  {
+    "id": "eval-hallucination-guard",
+    "description": "JD requires skills completely absent from base resume — model must not hallucinate new companies or skills",
+    "jd_text": "Blockchain Engineer at CryptoScale. Build smart contracts and DeFi protocols. Required: Solidity, Ethereum, Web3.py, Hardhat, DeFi. Preferred: Rust, IPFS. Keywords: blockchain, Solidity, Ethereum, smart contracts, DeFi, Web3.",
+    "base_resume": {
+      "name": "Jane Doe",
+      "summary": "Backend Python engineer with no blockchain experience.",
+      "experience": [
+        {
+          "company": "Acme Corp",
+          "role": "Software Engineer",
+          "dates": "Jan 2020 – Present",
+          "bullets": [
+            "Built REST APIs with Python and FastAPI",
+            "Managed PostgreSQL databases and wrote complex SQL queries",
+            "Deployed services on AWS using Docker and Kubernetes"
+          ]
+        }
+      ],
+      "skills": ["Python", "FastAPI", "PostgreSQL", "Docker", "Kubernetes", "AWS"],
+      "education": [{"institution": "State University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["blockchain", "Solidity", "Ethereum", "smart contracts", "DeFi"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.0,
+      "keyword_coverage_max": 1.0,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true,
+      "note": "Critical: model must NOT invent new employers or education institutions. Skills may be rephrased."
+    }
+  },
+  {
+    "id": "eval-keyword-density",
+    "description": "JD has many overlapping keywords — tests that the model surfaces them systematically",
+    "jd_text": "DevOps / Platform Engineer at CloudPeak. Own cloud infrastructure on AWS. Required: AWS, Terraform, Docker, Kubernetes, Python, CI/CD, monitoring. Preferred: Grafana, Prometheus, Datadog, Ansible. Keywords: AWS, Terraform, infrastructure as code, Kubernetes, Docker, monitoring, reliability, automation, observability, SRE.",
+    "base_resume": {
+      "name": "Jane Doe",
+      "summary": "Backend engineer with cloud deployment and infrastructure automation experience.",
+      "experience": [
+        {
+          "company": "Acme Corp",
+          "role": "Senior Software Engineer",
+          "dates": "Jan 2022 – Present",
+          "bullets": [
+            "Managed AWS infrastructure: EC2, RDS, S3, CloudWatch for production workloads",
+            "Wrote Terraform modules for infrastructure as code; reduced provisioning time by 60%",
+            "Set up observability stack: Prometheus metrics, Grafana dashboards, PagerDuty alerts",
+            "Automated deployments with GitHub Actions CI/CD pipelines and Kubernetes"
+          ]
+        }
+      ],
+      "skills": ["Python", "AWS", "Terraform", "Docker", "Kubernetes", "Prometheus", "Grafana", "CI/CD", "Ansible"],
+      "education": [{"institution": "State University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["AWS", "Terraform", "infrastructure as code", "Kubernetes", "Docker", "monitoring", "automation", "observability"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.75,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true
+    }
+  },
+  {
+    "id": "eval-summary-rewrite",
+    "description": "Base resume has a generic summary — model should rewrite it to target the specific role without inventing facts",
+    "jd_text": "Staff Engineer at FinTech startup. Lead architecture decisions for payment processing systems. Required: distributed systems, Python, event-driven architecture, Kafka, high availability. Preferred: Go, gRPC. Keywords: distributed systems, event-driven, Kafka, payment processing, high availability, staff engineer, technical leadership.",
+    "base_resume": {
+      "name": "Jane Doe",
+      "summary": "Software engineer with experience in backend systems.",
+      "experience": [
+        {
+          "company": "Acme Corp",
+          "role": "Senior Software Engineer",
+          "dates": "Jan 2022 – Present",
+          "bullets": [
+            "Designed event-driven architecture using Kafka for real-time order processing",
+            "Built high-availability payment APIs handling $10M/day in transactions",
+            "Led architecture review for distributed microservices migration",
+            "Mentored 4 engineers; drove technical standards across the team"
+          ]
+        },
+        {
+          "company": "Beta Systems",
+          "role": "Software Engineer",
+          "dates": "Jun 2019 – Dec 2021",
+          "bullets": [
+            "Built Python backend services for financial data processing",
+            "Implemented retry logic and circuit breakers for high-availability requirements"
+          ]
+        }
+      ],
+      "skills": ["Python", "Kafka", "FastAPI", "PostgreSQL", "Docker", "Kubernetes", "distributed systems"],
+      "education": [{"institution": "State University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["distributed systems", "event-driven", "Kafka", "high availability", "technical leadership"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.8,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true
+    }
+  },
+  {
+    "id": "eval-career-switcher",
+    "description": "QA engineer applying for backend role — partial skills match. Model must NOT invent engineering experience; must use only what is real.",
+    "jd_text": "Backend Software Engineer at BuildRight. Build REST APIs and microservices. Required: Python, Django or FastAPI, PostgreSQL, unit testing, Git. Preferred: Docker, CI/CD. Keywords: Python, REST API, microservices, unit testing, PostgreSQL, CI/CD, Git, backend development.",
+    "base_resume": {
+      "name": "Sam Lee",
+      "summary": "QA engineer with 3 years of manual and automated testing across web and mobile.",
+      "experience": [
+        {
+          "company": "Startup QA",
+          "role": "Software Test Engineer",
+          "dates": "Mar 2021 – Present",
+          "bullets": [
+            "Wrote 400+ automated test cases using Selenium and pytest covering REST API endpoints",
+            "Maintained PostgreSQL test databases and wrote SQL queries for data validation",
+            "Integrated tests into CI/CD pipelines via GitHub Actions",
+            "Collaborated with backend engineers to reproduce and document bugs"
+          ]
+        },
+        {
+          "company": "Dev Bootcamp",
+          "role": "Student Software Developer",
+          "dates": "Jan 2020 – Feb 2021",
+          "bullets": [
+            "Built a CRUD web app with Python and Flask as capstone project",
+            "Wrote unit tests with pytest and used Git for version control"
+          ]
+        }
+      ],
+      "skills": ["Python", "pytest", "Selenium", "SQL", "PostgreSQL", "Git", "GitHub Actions", "REST API testing"],
+      "education": [{"institution": "Dev Bootcamp", "degree": "Certificate in Software Development", "year": "2021"}]
+    },
+    "expected_keywords": ["Python", "REST API", "unit testing", "PostgreSQL", "Git", "CI/CD"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.6,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true,
+      "note": "Must not invent FastAPI/Django/microservices experience. Python and REST API testing are real."
+    }
+  },
+  {
+    "id": "eval-date-preservation",
+    "description": "Dates must be preserved exactly as in base resume — single line, no newlines, no markdown",
+    "jd_text": "Full Stack Engineer at WebCo. Build React frontends and Node.js APIs. Required: React, TypeScript, Node.js, REST APIs, PostgreSQL. Keywords: React, TypeScript, Node.js, REST APIs, PostgreSQL, full-stack.",
+    "base_resume": {
+      "name": "Alex Kim",
+      "summary": "Full stack engineer building web applications.",
+      "experience": [
+        {
+          "company": "WebCo",
+          "role": "Full Stack Engineer",
+          "dates": "Mar 2022 – Present",
+          "bullets": [
+            "Built React/TypeScript dashboards consumed by 10k users",
+            "Designed Node.js REST APIs backed by PostgreSQL"
+          ]
+        },
+        {
+          "company": "Agency Ltd",
+          "role": "Frontend Developer",
+          "dates": "Sep 2019 – Feb 2022",
+          "bullets": [
+            "Delivered 8 client sites in React and TypeScript",
+            "Integrated third-party REST APIs for payment and auth flows"
+          ]
+        }
+      ],
+      "skills": ["React", "TypeScript", "Node.js", "PostgreSQL", "REST APIs", "Git"],
+      "education": [{"institution": "Online University", "degree": "B.S. Computer Science", "year": "2019"}]
+    },
+    "expected_keywords": ["React", "TypeScript", "Node.js", "REST APIs", "PostgreSQL", "full-stack"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.8,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true,
+      "date_preservation": true,
+      "note": "Dates 'Mar 2022 – Present' and 'Sep 2019 – Feb 2022' must appear exactly as-is in output."
+    }
+  },
+  {
+    "id": "eval-skills-specificity",
+    "description": "Skills section must contain only tool/technology names — no generic JD activity phrases",
+    "jd_text": "React Native Engineer at MobileFirst. Build cross-platform mobile apps. Required: React Native, TypeScript, JavaScript, REST APIs, state management. Preferred: Redux, Expo, mobile testing. Keywords: React Native, TypeScript, mobile development, REST API, Redux, Expo, cross-platform.",
+    "base_resume": {
+      "name": "Pat Rivera",
+      "summary": "Mobile developer with 4 years in React Native.",
+      "experience": [
+        {
+          "company": "MobileFirst",
+          "role": "React Native Developer",
+          "dates": "Jan 2021 – Present",
+          "bullets": [
+            "Shipped 3 React Native apps to App Store and Google Play",
+            "Implemented Redux for global state management; reduced re-renders by 30%",
+            "Integrated REST APIs for auth, payments, and real-time notifications using Expo"
+          ]
+        }
+      ],
+      "skills": ["React Native", "TypeScript", "JavaScript", "Redux", "Expo", "REST APIs", "Git"],
+      "education": [{"institution": "Tech College", "degree": "B.S. Computer Science", "year": "2020"}]
+    },
+    "expected_keywords": ["React Native", "TypeScript", "Redux", "Expo", "REST APIs"],
+    "expected_scores": {
+      "keyword_coverage_min": 0.8,
+      "no_hallucination": true,
+      "no_markdown": true,
+      "first_person_summary": true,
+      "skills_are_tools": true,
+      "note": "Skills must not include phrases like 'mobile development', 'state management', 'cross-platform' — only tool names."
+    }
+  }
+]

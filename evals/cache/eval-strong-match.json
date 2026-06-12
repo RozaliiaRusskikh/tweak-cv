@@ -1,0 +1,45 @@
+{
+  "tailored": {
+    "summary": "I am a Senior Python Engineer with 6 years of experience building scalable and reliable microservices. I have a proven track record in developing high-availability systems using Python and FastAPI, containerizing applications with Docker, orchestrating them in Kubernetes, and implementing robust CI/CD pipelines. My expertise includes optimizing PostgreSQL databases and leveraging Redis for caching, ensuring efficient and performant software engineering.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Senior Software Engineer",
+        "dates": "Jan 2022 \n\u2013 Present",
+        "bullets": [
+          "Designed and maintained FastAPI microservices handling 10M requests/day, ensuring high-availability and scalability.",
+          "Managed Kubernetes clusters and CI/CD pipelines with GitHub Actions, supporting reliable deployments.",
+          "Reduced PostgreSQL query latency by 40% through indexing and caching with Redis, enhancing system performance."
+        ]
+      },
+      {
+        "company": "Beta Systems",
+        "role": "Software Engineer",
+        "dates": "Jun 2019 \n\u2013 Dec 2021",
+        "bullets": [
+          "Built REST APIs with Python and FastAPI serving 50k daily users, focusing on reliability.",
+          "Containerized services with Docker and contributed to Kubernetes migration, improving deployment scalability.",
+          "Implemented Celery task queues for asynchronous processing, enhancing the efficiency of background jobs."
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "Docker",
+      "Kubernetes",
+      "PostgreSQL",
+      "Redis",
+      "CI/CD",
+      "REST APIs",
+      "Celery"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}
