@@ -5,7 +5,7 @@
       {
         "company": "WebCo",
         "role": "Full Stack Engineer",
-        "dates": "Mar 2022 \n\u2013 Present",
+        "dates": "Mar 2022 \u2013 Present",
         "bullets": [
           "Built React/TypeScript dashboards consumed by 10k users, enhancing user experience and data accessibility.",
           "Designed and implemented Node.js REST APIs, ensuring efficient data retrieval and manipulation using PostgreSQL."
@@ -14,7 +14,7 @@
       {
         "company": "Agency Ltd",
         "role": "Frontend Developer",
-        "dates": "Sep 2019 \n\u2013 Feb 2022",
+        "dates": "Sep 2019 \u2013 Feb 2022",
         "bullets": [
           "Delivered 8 client sites using React and TypeScript, meeting diverse project requirements.",
           "Integrated third-party REST APIs for critical payment and authentication flows, ensuring secure and seamless user transactions."

@@ -2,6 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from tweakcv.schemas import (
+    ExperienceEntry,
     JDAnalysisOutput,
     ScoreResult,
     TailoredResumeOutput,
@@ -23,6 +24,11 @@ def test_jd_analysis_output_valid() -> None:
 def test_jd_analysis_output_missing_field() -> None:
     with pytest.raises(ValidationError):
         JDAnalysisOutput(role="Engineer", required_skills=[], preferred_skills=[], keywords=[])  # type: ignore[call-arg]
+
+
+def test_experience_entry_collapses_newline_in_dates() -> None:
+    entry = ExperienceEntry(company="Acme", role="Eng", dates="Mar 2022 \n– Present", bullets=[])
+    assert entry.dates == "Mar 2022 – Present"
 
 
 def test_tailored_resume_round_trips_json() -> None:

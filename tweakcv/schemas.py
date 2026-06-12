@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+import re
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class JDAnalysisOutput(BaseModel):
@@ -14,6 +16,14 @@ class ExperienceEntry(BaseModel):
     role: str
     dates: str
     bullets: list[str]
+
+    @field_validator("dates")
+    @classmethod
+    def _collapse_whitespace(cls, v: str) -> str:
+        """Collapse embedded newlines/extra spaces — the LLM sometimes wraps date
+        ranges onto two lines (e.g. "Mar 2022 \\n– Present"), which breaks the
+        single-line date layout in the rendered resume."""
+        return re.sub(r"\s+", " ", v).strip()
 
 
 class EducationEntry(BaseModel):
