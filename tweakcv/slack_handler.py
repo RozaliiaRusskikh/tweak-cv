@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, Request
+from langgraph.types import Command
 from loguru import logger
 from slack_bolt import App
 from slack_bolt.adapter.fastapi import SlackRequestHandler
@@ -59,8 +60,6 @@ _registry_lock = threading.Lock()
 
 
 def _resume_graph(job_id: int, feedback: str) -> None:
-    from langgraph.types import Command
-
     with SessionLocal() as db:
         job = db.get(Job, job_id)
         if job is None:
