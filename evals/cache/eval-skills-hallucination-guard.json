@@ -1,0 +1,32 @@
+{
+  "tailored": {
+    "summary": "I am a backend engineer with 5 years of experience building Python services and REST APIs. I have a proven track record of developing robust backend services using C#, .NET Core, and SQL Server, and I am proficient in Docker for containerization. My experience includes creating RESTful APIs and I am eager to contribute my skills to building full-stack solutions.",
+    "experience": [
+      {
+        "company": "Acme Corp",
+        "role": "Software Engineer",
+        "dates": "Jan 2021 \n\u2013 Present",
+        "bullets": [
+          "Developed RESTful APIs using Python and FastAPI to support internal tooling.",
+          "Wrote and optimized SQL queries against a PostgreSQL database for data retrieval.",
+          "Containerized services using Docker and managed deployments on AWS."
+        ]
+      }
+    ],
+    "skills": [
+      "Python",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "AWS",
+      "Git"
+    ],
+    "education": [
+      {
+        "institution": "State University",
+        "degree": "B.S. Computer Science",
+        "year": "2019"
+      }
+    ]
+  }
+}
