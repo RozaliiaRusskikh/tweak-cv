@@ -51,12 +51,16 @@ uv run mypy --strict .      # type check
 
 Use `loguru` for all logging. Never use the stdlib `logging` module directly.
 
+Format messages as an f-string with `event_name key=value` pairs embedded directly in the string:
+
 ```python
 from loguru import logger
 
-logger.info("...")
-logger.error("...")
+logger.info(f"analyze_start thread_id={state['thread_id']}")
+logger.error(f"resume_graph_failed job_id={job_id} error={exc}")
 ```
+
+Do NOT pass context as extra kwargs (`logger.info("event", key=value)`) — loguru calls `message.format(**kwargs)`, and a message with no `{key}` placeholder silently drops those values from the output.
 
 ## Testing
 

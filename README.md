@@ -6,6 +6,45 @@ Paste a job description → AI tailors your resume → review in Slack → PDF s
 
 ![TweakCV Full Architecture](docs/architecture.png)
 
+### Graph flow (`tweakcv/graph.py`)
+
+```
+START
+  │
+  ▼
+analyze ──error──┐
+  │ok             │
+  ▼               │
+tailor ──error────┤
+  │ok             │
+  ▼               │
+notify             │
+  │                │
+  ▼                │
+await_feedback ────┤  (interrupt — pauses here)
+  │                │
+  ├─approve──> finalize ──> END
+  ├─edit─────> edit ──ok──> notify   (loops back)
+  │              └─error───┤
+  ├─reject───────────────> END
+  ├─expired──────────────> END
+  └─error─────────────────┤
+                           ▼
+                         error ──> END
+```
+
+| Node | File | Role |
+|---|---|---|
+| `analyze` | `tweakcv/nodes/analyze.py` | Calls `analyze-jd` LLM → extracts company, role, keywords |
+| `tailor` | `tweakcv/nodes/tailor.py` | Calls `tailor-resume` LLM, scores, retries once if `needs_retry` |
+| `notify` | `tweakcv/nodes/notify.py` | Posts/updates Slack message with resume + scores + buttons |
+| `await_feedback` | `tweakcv/nodes/await_feedback.py` | `interrupt()` — pauses graph until a Slack button click or thread reply resumes it |
+| `edit` | `tweakcv/nodes/edit.py` | Calls `edit-resume` LLM, increments `iteration`, saves a `ResumeVersion` |
+| `finalize` | `tweakcv/nodes/finalize.py` | Renders + exports the PDF, marks job `approved` |
+| `error` | `tweakcv/nodes/error.py` | Posts a user-friendly Slack error, marks job `failed` |
+
+`route_feedback()` and `build_graph()` (the edges/conditional routing above) live in `tweakcv/graph.py`. The `iteration >= 4` hard stop forces `reject` regardless of feedback.
+
 **Score gates** run on every version before Slack is notified:
 - `keyword_coverage` — % of JD keywords present (retry if < 0.5)
 - `no_hallucination` — no invented companies, dates, or skills

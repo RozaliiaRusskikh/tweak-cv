@@ -29,7 +29,7 @@ Build a personal CLI tool that takes a job description, uses a LangGraph state m
 
 **Project Type**: Persistent webhook server (`uvicorn tweakcv.slack_handler:app` runs in Docker); a JD posted to the Slack channel triggers `runner.py::run_job()`, which builds the initial state and invokes the graph
 
-**Performance Goals**: Slack message within 2 min of JD submission; edit results within 90 sec
+**Performance Goals**: Slack message within 2 min of JD submission
 
 **Constraints**: Single user, no auth, local storage only, free-tier AI (Gemini) + observability (Langfuse Hobby 50k obs/month)
 

@@ -123,7 +123,7 @@
 
 **Goal**: User clicks Edit → bot asks what to change → user replies → updated resume posted in thread; max 3 iterations.
 
-**Independent Test**: Click Edit; type change request; confirm updated resume in thread within 90 sec; `resume_versions` has new row.
+**Independent Test**: Click Edit; type change request; confirm updated resume in thread; `resume_versions` has new row.
 
 ### Tests — User Story 3
 

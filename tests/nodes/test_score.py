@@ -145,17 +145,22 @@ def test_edit_fidelity_identical_resumes_returns_one() -> None:
 # ── trace output ──────────────────────────────────────────────────────────────
 
 
-def test_attach_trace_output_sets_observation_output() -> None:
+def test_attach_trace_output_sets_observation_input_and_output() -> None:
     with patch("tweakcv.nodes.score.get_langfuse") as mock_get_langfuse:
         mock_span = mock_get_langfuse.return_value.start_observation.return_value
-        _attach_trace_output("trace1", TAILORED_WITH_PYTHON)
+        _attach_trace_output("trace1", BASE_RESUME, ["Python", "Docker"], TAILORED_WITH_PYTHON)
 
     mock_get_langfuse.return_value.start_observation.assert_called_once_with(
-        trace_context={"trace_id": "trace1"}, name="tailored-resume", output=TAILORED_WITH_PYTHON
+        trace_context={"trace_id": "trace1"},
+        name="tailored-resume",
+        input={"base_resume": BASE_RESUME, "keywords": ["Python", "Docker"]},
+        output=TAILORED_WITH_PYTHON,
     )
     mock_span.end.assert_called_once()
 
 
 def test_attach_trace_output_swallows_errors() -> None:
     with patch("tweakcv.nodes.score.get_langfuse", side_effect=RuntimeError("boom")):
-        _attach_trace_output("trace1", TAILORED_WITH_PYTHON)  # must not raise
+        _attach_trace_output(
+            "trace1", BASE_RESUME, ["Python"], TAILORED_WITH_PYTHON
+        )  # must not raise

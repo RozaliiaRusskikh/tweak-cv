@@ -53,7 +53,7 @@ The job seeker reviews the tailored resume in Slack but wants specific changesâ€
 
 **Acceptance Scenarios**:
 
-1. **Given** the user clicks Edit, **When** they type a change request in the Slack thread, **Then** an updated tailored resume is posted in the same thread within 90 seconds, along with updated scores and action buttons.
+1. **Given** the user clicks Edit, **When** they type a change request in the Slack thread, **Then** an updated tailored resume is posted in the same thread, along with updated scores and action buttons.
 2. **Given** the user has completed 3 edit iterations, **When** the 3rd updated resume is posted, **Then** only Approve and Reject buttons are shownâ€”no Edit button.
 3. **Given** the user attempts to send a second edit request in the thread before receiving a response, **Then** the system acknowledges only the first request and informs the user to wait for the updated resume.
 4. **Given** the user's edit request is ambiguous, **Then** the system applies its best interpretation and notes what it changed in the thread reply.
@@ -119,11 +119,10 @@ The job seeker reviews the tailored resume and decides it is not suitable for th
 ### Measurable Outcomes
 
 - **SC-001**: The user receives a Slack review message within 2 minutes of providing the job description.
-- **SC-002**: Edit requests are reflected in an updated resume posted to Slack within 90 seconds of the user submitting the request.
-- **SC-003**: 100% of approved resumes result in a valid, complete PDF file saved to the output directory.
-- **SC-004**: Every session (whether approved, rejected, or expired) has a corresponding log entry with all required fields populated.
-- **SC-005**: Expired Slack messages are marked as such within 5 minutes of the 24-hour window closing.
-- **SC-006**: Zero hallucinations (unverified factual claims) are present in any approved tailored resume, as validated by the hallucination score.
+- **SC-002**: 100% of approved resumes result in a valid, complete PDF file saved to the output directory.
+- **SC-003**: Every session (whether approved, rejected, or expired) has a corresponding log entry with all required fields populated.
+- **SC-004**: After 24 hours with no response, the user sees the Slack message marked as expired.
+- **SC-005**: Zero hallucinations (unverified factual claims) are present in any approved tailored resume, as validated by the hallucination score.
 
 ## Assumptions
 
