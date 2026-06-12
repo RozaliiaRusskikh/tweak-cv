@@ -5,6 +5,7 @@ import pytest
 from tweakcv.nodes.score import (
     _attach_trace_output,
     _detect_new_entities,
+    _detect_new_skills,
     compute_edit_fidelity,
     compute_keyword_coverage,
     score,
@@ -66,8 +67,9 @@ def test_kw_coverage_empty_keywords_returns_one() -> None:
 def test_detect_new_entities_no_hallucination() -> None:
     # Same company as base
     new = _detect_new_entities(BASE_RESUME, TAILORED_WITH_PYTHON)
-    # "Kubernetes" is a new skill — that IS detected
     assert all("company:" not in e and "institution:" not in e for e in new)
+    # "Kubernetes" has no basis in BASE_RESUME's skills or bullets — flagged
+    assert "skill:Kubernetes" in new
 
 
 def test_detect_new_entities_new_company() -> None:
@@ -84,6 +86,37 @@ def test_detect_new_entities_new_institution() -> None:
     tailored_with_fake_edu["education"] = [{"institution": "MIT", "degree": "PhD", "year": "2020"}]
     new = _detect_new_entities(BASE_RESUME, tailored_with_fake_edu)
     assert any("institution:MIT" in e for e in new)
+
+
+def test_detect_new_skills_renames_not_flagged() -> None:
+    base = {**BASE_RESUME, "skills": ["Python", "PostgreSQL", "GPT-4"]}
+    tailored = {**TAILORED_WITH_PYTHON, "skills": ["Python", "Postgres", "GPT-4o"]}
+    # "Postgres"/"PostgreSQL" and "GPT-4"/"GPT-4o" are renames, not hallucinations
+    assert _detect_new_skills(base, tailored) == []
+
+
+def test_detect_new_skills_grounded_in_bullet_not_flagged() -> None:
+    base = {
+        **BASE_RESUME,
+        "experience": [
+            {
+                "company": "Acme Corp",
+                "role": "Senior Engineer",
+                "dates": "2022–Present",
+                "bullets": ["Wrote complex SQL queries against PostgreSQL"],
+            }
+        ],
+    }
+    tailored = {**TAILORED_WITH_PYTHON, "skills": ["Python", "Docker", "SQL"]}
+    # "SQL" isn't in base skills but appears verbatim in an experience bullet
+    assert _detect_new_skills(base, tailored) == []
+
+
+def test_detect_new_skills_unrelated_skill_flagged() -> None:
+    tailored = {**TAILORED_WITH_PYTHON, "skills": ["Python", "Docker", "C#", ".NET Core"]}
+    new = _detect_new_skills(BASE_RESUME, tailored)
+    assert "skill:C#" in new
+    assert "skill:.NET Core" in new
 
 
 # ── needs_retry ───────────────────────────────────────────────────────────────

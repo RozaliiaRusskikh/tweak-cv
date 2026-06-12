@@ -77,7 +77,7 @@ def test_last_edit_warning_shown_at_iteration_3() -> None:
         if block.get("type") == "context"
         for el in block.get("elements", [])
     ]
-    assert any("last edit" in t for t in context_texts)
+    assert any("last edit" in t.lower() for t in context_texts)
 
 
 def test_no_warning_at_iteration_2() -> None:
@@ -86,7 +86,7 @@ def test_no_warning_at_iteration_2() -> None:
     # Context block may be absent or present without the warning
     for block in context_blocks:
         for el in block.get("elements", []):
-            assert "last edit" not in el.get("text", "")
+            assert "last edit" not in el.get("text", "").lower()
 
 
 def test_header_contains_company_and_role() -> None:
